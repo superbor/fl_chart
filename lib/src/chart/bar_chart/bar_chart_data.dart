@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fl_chart/src/chart/bar_chart/bar_chart_helper.dart';
+import 'package:fl_chart/src/extend/my_extend.dart';
 import 'package:fl_chart/src/extensions/color_extension.dart';
 import 'package:fl_chart/src/utils/lerp.dart';
 import 'package:fl_chart/src/utils/utils.dart';
@@ -35,6 +36,9 @@ class BarChartData extends AxisChartData with EquatableMixin {
   /// Horizontal lines are drawn with [extraLinesData]. Vertical lines will not be painted if received.
   /// Please see issue #1149 (https://github.com/imaNNeo/fl_chart/issues/1149) for vertical lines.
   BarChartData({
+    double? lineMaxX,
+    double? lineMaxY,
+    LineChartBarData? lineChartBarData,
     List<BarChartGroupData>? barGroups,
     double? groupsSpace,
     BarChartAlignment? alignment,
@@ -52,6 +56,9 @@ class BarChartData extends AxisChartData with EquatableMixin {
         groupsSpace = groupsSpace ?? 16,
         alignment = alignment ?? BarChartAlignment.spaceEvenly,
         barTouchData = barTouchData ?? BarTouchData(),
+        lineMaxX = lineMaxX ?? 0,
+        lineMaxY = lineMaxY ?? 0,
+        lineChartBarData = lineChartBarData ?? LineChartBarData(),
         super(
           titlesData: titlesData ??
               FlTitlesData(
@@ -87,7 +94,14 @@ class BarChartData extends AxisChartData with EquatableMixin {
 
   /// Copies current [BarChartData] to a new [BarChartData],
   /// and replaces provided values.
+  /// 新增
+  double? lineMaxX;
+  double? lineMaxY;
+  LineChartBarData? lineChartBarData;
+
   BarChartData copyWith({
+    double? lineMaxX,
+    double? lineMaxY,
     List<BarChartGroupData>? barGroups,
     double? groupsSpace,
     BarChartAlignment? alignment,
@@ -101,6 +115,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
     double? baselineY,
     Color? backgroundColor,
     ExtraLinesData? extraLinesData,
+    LineChartBarData? lineChartBarData,
   }) {
     return BarChartData(
       barGroups: barGroups ?? this.barGroups,
@@ -116,6 +131,9 @@ class BarChartData extends AxisChartData with EquatableMixin {
       baselineY: baselineY ?? this.baselineY,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       extraLinesData: extraLinesData ?? this.extraLinesData,
+      lineMaxX: lineMaxX ?? this.lineMaxX,
+      lineMaxY: lineMaxY ?? this.lineMaxY,
+      lineChartBarData: lineChartBarData ?? this.lineChartBarData,
     );
   }
 
@@ -696,6 +714,8 @@ class BarTouchTooltipData with EquatableMixin {
   /// you can set [fitInsideHorizontally] true to force it to shift inside the chart horizontally,
   /// also you can set [fitInsideVertically] true to force it to shift inside the chart vertically.
   BarTouchTooltipData({
+    double? leftWidth,
+    double? rightWidth,
     Color? tooltipBgColor,
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
@@ -709,6 +729,7 @@ class BarTouchTooltipData with EquatableMixin {
     TooltipDirection? direction,
     double? rotateAngle,
     BorderSide? tooltipBorder,
+    GetBarTooltipItems? getBarTooltipItems,
   })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
@@ -724,7 +745,15 @@ class BarTouchTooltipData with EquatableMixin {
         direction = direction ?? TooltipDirection.auto,
         rotateAngle = rotateAngle ?? 0.0,
         tooltipBorder = tooltipBorder ?? BorderSide.none,
+        leftWidth = leftWidth ?? 0,
+        rightWidth = rightWidth ?? 0,
+        getBarTooltipItems = getBarTooltipItems ?? defaultBarTooltipItems,
         super();
+
+  /// 新增
+  final double leftWidth;
+  final double rightWidth;
+  final GetBarTooltipItems getBarTooltipItems;
 
   /// The tooltip background color.
   final Color tooltipBgColor;
@@ -821,7 +850,11 @@ class BarTooltipItem with EquatableMixin {
     this.textAlign = TextAlign.center,
     this.textDirection = TextDirection.ltr,
     this.children,
+    this.iconStyle,
   });
+
+  /// 新增
+  BarTooltipIconStyle? iconStyle;
 
   /// Text of the content.
   final String text;
@@ -846,6 +879,7 @@ class BarTooltipItem with EquatableMixin {
         textAlign,
         textDirection,
         children,
+        iconStyle,
       ];
 }
 
